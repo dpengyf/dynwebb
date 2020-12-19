@@ -10,8 +10,6 @@ import {
   updateFirstVisit,
 } from "../../redux/actions";
 
-//(kanske en TODO; sortera egna spellistor och andras)
-//kanske kunna edita spellistor???
 class Dashboard extends Component {
   constructor(props) {
     super(props);
@@ -37,10 +35,13 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
-    setTimeout(() => {
+    if (this.props.token !== undefined) {
       this.fetchFromFirestore();
-    }, 500);
-    this.props.updateFirstVisit(true);
+      if (this.props.userDetails === undefined) {
+        this.pushToFirestoreUser();
+      }
+      this.props.updateFirstVisit(true);
+    }
   }
 
   pushToFirestoreUser() {
@@ -60,14 +61,13 @@ class Dashboard extends Component {
             ...oldUsers,
           ];
           db.collection("users").doc("userdoc").set({ users: users });
+          this.props.updateCurrentUser({
+            id: this.props.userDetails.id,
+            name: this.props.userDetails.name,
+            score: this.props.userDetails.score,
+            exist: true,
+          });
         });
-
-      this.props.updateCurrentUser({
-        id: this.props.userDetails.id,
-        name: this.props.userDetails.name,
-        score: this.props.userDetails.score,
-        exist: true,
-      });
     } catch (err) {
       this.setState({ err: err });
     }
@@ -76,18 +76,20 @@ class Dashboard extends Component {
   fetchFromFirestore() {
     try {
       this.setState({ loading: true });
-      db.collection("playlists")
-        .doc("playlistsdoc")
-        .get()
-        .then((doc) => {
-          return doc.data().playlist;
-        })
-        .then((playlists) => {
-          this.setState({
-            playlists: playlists,
-            loading: false,
+      setTimeout(() => {
+        db.collection("playlists")
+          .doc("playlistsdoc")
+          .get()
+          .then((doc) => {
+            return doc.data().playlist;
+          })
+          .then((playlists) => {
+            this.setState({
+              playlists: playlists,
+              loading: false,
+            });
           });
-        });
+      }, 1000);
     } catch (err) {
       this.setState({ err: err });
     }
@@ -99,13 +101,10 @@ class Dashboard extends Component {
       expires_in: null,
       token_type: null,
     });
-    return (window.location.href = "http://localhost:3000/login");
+    return (window.location.href = "https://spotitunes20.herokuapp.com/");
   }
 
   render() {
-    if (!this.props.userDetails.exist) {
-      this.pushToFirestoreUser();
-    }
     return (
       promiseNoData(this.state.loading, this.state.id, this.state.err) ||
       React.createElement(DashboardView, {
@@ -118,6 +117,7 @@ class Dashboard extends Component {
           this.props.updateCurrentPlaylist(playlist),
         searchPlaylist: (searchText) => this.searchPlaylist(searchText),
         userSignOut: () => this.userSignOut(),
+        token: this.props.token,
       })
     );
   }
@@ -126,6 +126,7 @@ class Dashboard extends Component {
 const mapStateToProps = (state) => {
   return {
     userDetails: state.current_user,
+    token: state.token,
   };
 };
 

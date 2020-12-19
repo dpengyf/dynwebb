@@ -4,8 +4,6 @@ import Play from "./Play";
 import { connect } from "react-redux";
 import promiseNoData from "../views/promiseNoData";
 import { isPlaying } from "../../redux/actions";
-//TODO: spellogik
-//TODO: få den att loada
 
 class GameDetails extends Component {
   constructor(props) {
@@ -18,12 +16,17 @@ class GameDetails extends Component {
   }
 
   startPlaying = () => {
-    this.setState({ loading: true });
-    setTimeout(() => {
-      this.props.isPlaying(true);
-      this.setState({ loading: false });
-    }, 1500);
+    this.props.isPlaying(true);
   };
+
+  componentDidMount() {
+    if (this.props.token !== undefined) {
+      this.setState({ loading: true });
+      setTimeout(() => {
+        this.setState({ loading: false });
+      }, 500);
+    }
+  }
 
   render() {
     return React.createElement(
@@ -34,6 +37,7 @@ class GameDetails extends Component {
             React.createElement(GameDetailsView, {
               current_playlist: this.props.current_playlist,
               startPlaying: () => this.startPlaying(),
+              token: this.props.token,
             })
         : promiseNoData(this.state.loading, this.state.err) ||
             React.createElement(Play, {})
@@ -43,9 +47,9 @@ class GameDetails extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    current_user: state.current_user,
     current_playlist: state.current_playlist,
     is_playing: state.is_playing,
+    token: state.token,
   };
 };
 
