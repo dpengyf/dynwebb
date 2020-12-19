@@ -10,7 +10,7 @@ import {
 import { db } from "../../firebase";
 import promiseNoData from "../views/promiseNoData";
 //TODO: css/view; visa input för namn på spellistan även om det inte finns ngn låt, flytta input längst upp sa det är första steget
-
+//bugg när man skapar playlist, spinn i höger bara
 class PlaylistSummary extends Component {
   constructor(props) {
     super(props);
@@ -42,7 +42,7 @@ class PlaylistSummary extends Component {
             .set({
               playlist: [
                 {
-                  id: this.props.userDetails.id,
+                  id: this.props.userDetails.id.concat(this.state.name),
                   highscore: 0,
                   name: this.state.name,
                   tracks: this.props.playlist,
@@ -52,7 +52,9 @@ class PlaylistSummary extends Component {
             });
           this.setState({ loading: false });
         })
-        .then(() => this.props.resetPlaylist())
+        .then(() => {
+          this.props.resetPlaylist();
+        })
         .catch((err) => this.setState({ err: err }));
     } catch (err) {
       this.setState({ err: err });
@@ -78,14 +80,15 @@ class PlaylistSummary extends Component {
         },
         handleChange: (name) => this.handleChange(name),
         isEmpty: isEmpty,
+        token: this.props.token,
         pushToFirebase: () => {
-          this.pushToFirebase();
           this.props.updateCurrentPlaylist({
             id: this.props.userDetails.id.concat(this.state.name),
             name: this.state.name,
             highscore: 0,
             tracks: this.props.playlist,
           });
+          this.pushToFirebase();
         },
       })
     );
@@ -95,7 +98,9 @@ class PlaylistSummary extends Component {
 const mapStateToProps = (state) => {
   return {
     playlist: state.playlist,
+    current_playlist: state.current_playlist,
     userDetails: state.current_user,
+    token: state.token,
   };
 };
 

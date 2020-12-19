@@ -37,10 +37,12 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
-    setTimeout(() => {
+    if (this.props.token !== undefined) {
       this.fetchFromFirestore();
-    }, 500);
-    this.props.updateFirstVisit(true);
+      this.pushToFirestoreUser();
+
+      this.props.updateFirstVisit(true);
+    }
   }
 
   pushToFirestoreUser() {
@@ -76,18 +78,20 @@ class Dashboard extends Component {
   fetchFromFirestore() {
     try {
       this.setState({ loading: true });
-      db.collection("playlists")
-        .doc("playlistsdoc")
-        .get()
-        .then((doc) => {
-          return doc.data().playlist;
-        })
-        .then((playlists) => {
-          this.setState({
-            playlists: playlists,
-            loading: false,
+      setTimeout(() => {
+        db.collection("playlists")
+          .doc("playlistsdoc")
+          .get()
+          .then((doc) => {
+            return doc.data().playlist;
+          })
+          .then((playlists) => {
+            this.setState({
+              playlists: playlists,
+              loading: false,
+            });
           });
-        });
+      }, 1000);
     } catch (err) {
       this.setState({ err: err });
     }
@@ -103,9 +107,6 @@ class Dashboard extends Component {
   }
 
   render() {
-    if (!this.props.userDetails.exist) {
-      this.pushToFirestoreUser();
-    }
     return (
       promiseNoData(this.state.loading, this.state.id, this.state.err) ||
       React.createElement(DashboardView, {
@@ -118,6 +119,7 @@ class Dashboard extends Component {
           this.props.updateCurrentPlaylist(playlist),
         searchPlaylist: (searchText) => this.searchPlaylist(searchText),
         userSignOut: () => this.userSignOut(),
+        token: this.props.token,
       })
     );
   }
@@ -126,6 +128,7 @@ class Dashboard extends Component {
 const mapStateToProps = (state) => {
   return {
     userDetails: state.current_user,
+    token: state.token,
   };
 };
 

@@ -16,57 +16,58 @@ import Result from "./components/presenter/Play";
 const App = () => {
   return (
     <Provider store={store}>
-      <div>
-        <BrowserRouter>
-          <Switch>
-            <Redirect exact from="/" to="/login" />
+      <BrowserRouter>
+        <Switch>
+          <Redirect exact from="/" to="/login" />
+          <Route path="/infopage">
+            <InfoPage />
+          </Route>
 
-            <Route path="/infopage">
-              <InfoPage />
-            </Route>
+          <Route path="/login">
+            <SpotifyLogin />
+          </Route>
 
-            <Route path="/login">
-              <SpotifyLogin />
-            </Route>
+          <Route path="/callback">
+            <RedirectPage />
+          </Route>
 
-            <Route path="/callback">
-              <RedirectPage />
-            </Route>
+          <Route path="/dashboard">
+            <Dashboard />
+          </Route>
 
-            <Route path="/dashboard">
-              <Dashboard />
-            </Route>
+          <Route path="/gamedetails">
+            <GameDetails />
+          </Route>
 
-            <Route path="/gamedetails">
-              <GameDetails />
-            </Route>
+          <Route path="/details">
+            <Details />
+          </Route>
+          <Route path="/play">
+            <Play />
+          </Route>
 
-            <Route path="/details">
-              <Details />
-            </Route>
-            <Route path="/play">
-              <Play />
-            </Route>
+          <Route path="/create">
+            <div className="creategamebase justify-content-between col-sm-20 col-md-11 py-2">
+              <React.Fragment>
+                <div className="elem search">
+                  <Search />
+                </div>
+                <div className="playlist">
+                  <PlaylistSummary />
+                </div>
+              </React.Fragment>
+            </div>
+          </Route>
 
-            <Route path="/create">
-              <div className="creategamebase justify-content-between col-sm-20 col-md-11 py-2">
-                <React.Fragment>
-                  <div className="elem search">
-                    <Search />
-                  </div>
-                  <div className="playlist">
-                    <PlaylistSummary />
-                  </div>
-                </React.Fragment>
-              </div>
-            </Route>
+          <Route path="/result">
+            <Result />
+          </Route>
 
-            <Route path="/result">
-              <Result />
-            </Route>
-          </Switch>
-        </BrowserRouter>
-      </div>
+          <Route path="*" exact={true}>
+            <SpotifyLogin />
+          </Route>
+        </Switch>
+      </BrowserRouter>
     </Provider>
   );
 };

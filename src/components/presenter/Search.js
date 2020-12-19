@@ -39,7 +39,7 @@ class Search extends Component {
     });
     const request = ApiHandler.searchTracks(
       this.state.search_text,
-      this.props.access_token
+      this.props.token.access_token
     );
 
     request
@@ -70,17 +70,19 @@ class Search extends Component {
   }
 
   componentDidMount() {
-    if (this.props.first_visit) {
-      this.handleSubmit();
-      this.props.updateFirstVisit(false);
-    }
-    let input = document.getElementById("searchInput");
-    input.addEventListener("keyup", (e) => {
-      if (e.code === "Enter") {
-        e.preventDefault();
-        document.getElementById("searchBtn").click();
+    if (this.props.token !== undefined) {
+      if (this.props.first_visit) {
+        this.handleSubmit();
+        this.props.updateFirstVisit(false);
       }
-    });
+      let input = document.getElementById("searchInput");
+      input.addEventListener("keyup", (e) => {
+        if (e.code === "Enter") {
+          e.preventDefault();
+          document.getElementById("searchBtn").click();
+        }
+      });
+    }
   }
 
   render() {
@@ -93,6 +95,7 @@ class Search extends Component {
           this.handleSubmit();
           this.resetInput();
         },
+        token: this.props.token,
       }),
       promiseNoData(this.state.loading, this.state.data, this.state.err) ||
         React.createElement(SearchFormResultView, {
@@ -106,6 +109,7 @@ class Search extends Component {
               previewURL: trackObject.preview_url,
             });
           },
+          token: this.props.token,
         })
     );
   }
@@ -113,7 +117,7 @@ class Search extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    access_token: state.token.access_token,
+    token: state.token,
     first_visit: state.first_visit,
   };
 };

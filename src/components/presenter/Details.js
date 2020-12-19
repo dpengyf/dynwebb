@@ -13,35 +13,46 @@ class Details extends Component {
       loading: false,
       err: null,
     };
+    this.addToPlaylist = this.addToPlaylist.bind(this);
   }
 
   componentDidMount() {
-    if (this.props.track) {
-      this.setState({
-        loading: true,
-      });
+    if (this.props.token !== undefined) {
+      if (this.props.track) {
+        this.setState({
+          loading: true,
+        });
 
-      ApiHandler.fetchLyrics(
-        this.props.track.title,
-        this.props.track.artist
-      ).then((res) => {
-        this.setState({ lyrics: res, loading: false });
-      });
+        ApiHandler.fetchLyrics(this.props.track.title, this.props.track.artist)
+          .then((res) => {
+            this.setState({ lyrics: res, loading: false });
+          })
+          .catch((err) => {
+            this.setState({ err: err });
+          });
+      }
     }
   }
-
+  addToPlaylist(track) {
+    this.setState({ loading: true });
+    setTimeout(() => {
+      this.props.addToPlaylist(track);
+    }, 1000);
+    this.setState({ loading: false });
+  }
   render() {
     return (
       promiseNoData(this.state.loading, this.state.lyrics, this.state.err) ||
       React.createElement(DetailsView, {
         track: this.props.track,
         addToPlaylist: (track) => {
-          this.props.addToPlaylist(track);
+          this.addToPlaylist(track);
         },
         removeFromPlaylist: (trackID) => this.props.removeFromPlaylist(trackID),
         isTrackInPlaylist: this.props.isTrackInPlaylist,
         playlist: this.props.playlist,
         lyrics: this.state.lyrics,
+        token: this.props.token,
       })
     );
   }
@@ -54,6 +65,7 @@ const mapStateToProps = (state) => {
     isTrackInPlaylist: state.playlist.some(
       (track) => track.id === state.current_track.id
     ),
+    token: state.token,
   };
 };
 

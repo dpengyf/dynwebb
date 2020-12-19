@@ -9,7 +9,6 @@
 /coverage
 
 # project shit
-**apiConfig.js
 *.eslintcache
 
 # production
