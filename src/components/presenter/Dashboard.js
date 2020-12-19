@@ -103,7 +103,7 @@ class Dashboard extends Component {
       expires_in: null,
       token_type: null,
     });
-    return (window.location.href = "http://localhost:3000/login");
+    return (window.location.href = "https://spotitunes20.herokuapp.com/login");
   }
 
   render() {
