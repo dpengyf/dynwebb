@@ -4,6 +4,8 @@ import "../../styles/creategame.css";
 import "../../styles/base.css";
 import { Redirect } from "react-router-dom";
 
+//lägg till state ex. image i spotify query
+//todo: fixa så att det inte krashar när man söker på tom query
 
 const PlaylistSummaryView = ({
   playlist,

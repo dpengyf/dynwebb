@@ -5,7 +5,6 @@ import ApiHandler from "../../apiHandler";
 import { connect } from "react-redux";
 import promiseNoData from "../views/promiseNoData";
 import { updateCurrentTrack, updateFirstVisit } from "../../redux/actions";
-
 class Search extends Component {
   constructor(props) {
     super(props);

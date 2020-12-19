@@ -12,7 +12,7 @@ class InfoPage extends Component {
       id: null,
       name: "",
       score: 0,
-      loading: false,
+      loading: props.token === undefined ? false : true,
       err: null,
       exist: false,
     };
@@ -25,7 +25,9 @@ class InfoPage extends Component {
         .doc("userdoc")
         .get()
         .then((doc) => {
-          let users = doc.data().users;
+          return doc.data().users;
+        })
+        .then((users) => {
           users.forEach((elem) => {
             if (elem.userid === this.state.id) {
               this.setState({ score: elem.score, exist: true });
@@ -38,11 +40,7 @@ class InfoPage extends Component {
   }
 
   componentDidMount() {
-    this.setState({
-      loading: true,
-    });
-
-    setTimeout(() => {
+    if (this.props.token !== undefined) {
       ApiHandler.fetchUserData(this.props.token.access_token)
         .then((res) => {
           this.setState({
@@ -53,7 +51,7 @@ class InfoPage extends Component {
           this.isExistingUser();
         })
         .catch((err) => this.setState({ err: err }));
-    }, 250);
+    }
   }
 
   render() {
@@ -67,6 +65,7 @@ class InfoPage extends Component {
             score: this.state.score,
             exist: this.state.exist,
           }),
+        token: this.props.token,
       })
     );
   }
@@ -75,6 +74,7 @@ class InfoPage extends Component {
 const mapStateToProps = (state) => {
   return {
     token: state.token,
+    current_user: state.current_user,
   };
 };
 

@@ -1,6 +1,9 @@
 import * as actionType from "./actionTypes";
 
-export default function reducer(state = { playlist: [] }, action) {
+export default function reducer(
+  state = { playlist: [], current_user: null },
+  action
+) {
   const { type, payload } = action;
   switch (type) {
     case actionType.TOKEN:
