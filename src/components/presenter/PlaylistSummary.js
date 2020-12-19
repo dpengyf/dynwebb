@@ -9,8 +9,6 @@ import {
 } from "../../redux/actions";
 import { db } from "../../firebase";
 import promiseNoData from "../views/promiseNoData";
-//TODO: css/view; visa input för namn på spellistan även om det inte finns ngn låt, flytta input längst upp sa det är första steget
-
 class PlaylistSummary extends Component {
   constructor(props) {
     super(props);
@@ -18,6 +16,7 @@ class PlaylistSummary extends Component {
       name: "",
       loading: false,
       err: null,
+      playlists: [],
     };
     this.handleChange = this.handleChange.bind(this);
     this.pushToFirebase = this.pushToFirebase.bind(this);
@@ -28,7 +27,23 @@ class PlaylistSummary extends Component {
       name: name,
     });
   }
-
+  componentDidMount() {
+    db.collection("playlists")
+      .doc("playlistsdoc")
+      .get()
+      .then((doc) => {
+        let oldPlaylists = doc.data().playlist;
+        let collectArr = [];
+        oldPlaylists.forEach((playlist) => {
+          if (
+            playlist.id.split(playlist.name)[0] === this.props.userDetails.id
+          ) {
+            collectArr.push(playlist);
+          }
+        });
+        this.setState({ playlists: collectArr });
+      });
+  }
   pushToFirebase() {
     try {
       this.setState({ loading: true });
@@ -42,7 +57,7 @@ class PlaylistSummary extends Component {
             .set({
               playlist: [
                 {
-                  id: this.props.userDetails.id,
+                  id: this.props.userDetails.id.concat(this.state.name),
                   highscore: 0,
                   name: this.state.name,
                   tracks: this.props.playlist,
@@ -52,7 +67,9 @@ class PlaylistSummary extends Component {
             });
           this.setState({ loading: false });
         })
-        .then(() => this.props.resetPlaylist())
+        .then(() => {
+          this.props.resetPlaylist();
+        })
         .catch((err) => this.setState({ err: err }));
     } catch (err) {
       this.setState({ err: err });
@@ -61,6 +78,10 @@ class PlaylistSummary extends Component {
 
   render() {
     let isEmpty = this.state.name == null || this.state.name === "";
+    let isExisting = this.state.playlists.some(
+      (obj) => obj.name === this.state.name
+    );
+
     return (
       promiseNoData(this.state.loading, this.state.err) ||
       React.createElement(PlaylistSummaryView, {
@@ -78,14 +99,16 @@ class PlaylistSummary extends Component {
         },
         handleChange: (name) => this.handleChange(name),
         isEmpty: isEmpty,
+        isExisting: isExisting,
+        token: this.props.token,
         pushToFirebase: () => {
-          this.pushToFirebase();
           this.props.updateCurrentPlaylist({
             id: this.props.userDetails.id.concat(this.state.name),
             name: this.state.name,
             highscore: 0,
             tracks: this.props.playlist,
           });
+          this.pushToFirebase();
         },
       })
     );
@@ -95,7 +118,9 @@ class PlaylistSummary extends Component {
 const mapStateToProps = (state) => {
   return {
     playlist: state.playlist,
+    current_playlist: state.current_playlist,
     userDetails: state.current_user,
+    token: state.token,
   };
 };
 

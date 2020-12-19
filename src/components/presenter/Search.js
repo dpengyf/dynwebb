@@ -5,8 +5,7 @@ import ApiHandler from "../../apiHandler";
 import { connect } from "react-redux";
 import promiseNoData from "../views/promiseNoData";
 import { updateCurrentTrack, updateFirstVisit } from "../../redux/actions";
-//TODO:flytta searchform + result from search till högra sidan av skärmen
-//TODO: få details i search results när man klickat på låt alt. få den på denna sida iallafall, inte prio
+
 class Search extends Component {
   constructor(props) {
     super(props);
