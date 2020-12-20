@@ -32,7 +32,9 @@ class PlaylistSummary extends Component {
       .doc("playlistsdoc")
       .get()
       .then((doc) => {
-        let oldPlaylists = doc.data().playlist;
+        return doc.data().playlist;
+      })
+      .then((oldPlaylists) => {
         let collectArr = [];
         oldPlaylists.forEach((playlist) => {
           if (
@@ -51,7 +53,9 @@ class PlaylistSummary extends Component {
         .doc("playlistsdoc")
         .get()
         .then((doc) => {
-          let oldPlaylists = doc.data().playlist;
+          return doc.data().playlist;
+        })
+        .then((oldPlaylists) => {
           db.collection("playlists")
             .doc("playlistsdoc")
             .set({

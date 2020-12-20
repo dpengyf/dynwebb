@@ -1,6 +1,12 @@
 import { useHistory, Redirect } from "react-router-dom";
 
-const GameDetailsView = ({ current_playlist, startPlaying, token }) => {
+const GameDetailsView = ({
+  current_playlist,
+  startPlaying,
+  myPlaylist,
+  removePlaylist,
+  token,
+}) => {
   let history = useHistory();
 
   return (
@@ -15,10 +21,40 @@ const GameDetailsView = ({ current_playlist, startPlaying, token }) => {
           >
             Exit
           </button>
-          <h1 className="display-4 lead">Playlist - {current_playlist.name}</h1>
-          <h1 className="display-5 lead text-muted">
-            Highscore: {current_playlist.highscore}
-          </h1>
+          <div className="container text-center">
+           <h1 className="display-5 lead text-muted">		             <h1 className="display-4 lead">
+             Highscore: {current_playlist.highscore}		               Playlist - {current_playlist.name}
+           </h1>		             </h1>
+             <h1 className="display-5 lead text-muted">
+               Highscore: {current_playlist.highscore}
+             </h1>
+             <div className="row-sm-4">
+               <button
+                 className="btn btn-secondary primaryButton mr-2"
+                 onClick={() => {
+                   history.push("/play");
+                   startPlaying();
+                 }}
+               >
+                 Let's Play!
+               </button>
+               {myPlaylist ? (
+                 <button
+                   className="btn btn-danger"
+                   onClick={() => {
+                     removePlaylist(current_playlist);
+                     setTimeout(() => {
+                       history.push("/dashboard");
+                     }, 250);
+                   }}
+                 >
+                   Remove Playlist
+                 </button>
+               ) : (
+                 ""
+               )}
+             </div>
+           </div>
           <section className="jumbotron text-center">
             <div className="container">
               <div className="row justify-content-center">
@@ -43,20 +79,11 @@ const GameDetailsView = ({ current_playlist, startPlaying, token }) => {
               </div>
             </div>
           </section>
-          <div className="container">
+          <div className="container text-center">
             <div className="col">
-              <h1 className="display-5 text-muted">
+              <h4 className="display-5 text-muted">
                 Total Tracks: {current_playlist.tracks.length}
-              </h1>
-              <button
-                className="btn btn-lg btn-secondary primaryButton ml-10"
-                onClick={() => {
-                  history.push("/play");
-                  startPlaying();
-                }}
-              >
-                Let's Play!
-              </button>
+              </h4>
             </div>
           </div>
         </div>

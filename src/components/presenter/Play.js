@@ -215,7 +215,7 @@ class Play extends Component {
           .doc("playlistsdoc")
           .get()
           .then((doc) => {
-            return doc.data().playlist;
+            return doc.data().playlists;
           })
           .then((playlists) => {
             let collectArr = [];

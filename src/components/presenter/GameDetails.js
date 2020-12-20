@@ -4,6 +4,7 @@ import Play from "./Play";
 import { connect } from "react-redux";
 import promiseNoData from "../views/promiseNoData";
 import { isPlaying } from "../../redux/actions";
+import { db } from "../../firebase";
 
 class GameDetails extends Component {
   constructor(props) {
@@ -13,11 +14,37 @@ class GameDetails extends Component {
       err: null,
     };
     this.startPlaying = this.startPlaying.bind(this);
+    this.removePlaylist = this.removePlaylist.bind(this);
   }
 
   startPlaying = () => {
     this.props.isPlaying(true);
   };
+
+  removePlaylist(current_playlist) {
+    try {
+      this.setState({ loading: true });
+      db.collection("playlists")
+        .doc("playlistsdoc")
+        .get()
+        .then((doc) => {
+          return doc.data().playlist;
+        })
+        .then((playlists) => {
+          let collectArr = [];
+          playlists.forEach((playlist) => {
+            if (playlist.id !== current_playlist.id) {
+              collectArr.push(playlist);
+            }
+          });
+          db.collection("playlists")
+            .doc("playlistsdoc")
+            .set({ playlist: collectArr });
+        });
+    } catch (err) {
+      this.setState({ err: err });
+    }
+  }
 
   componentDidMount() {
     if (this.props.token !== undefined) {
@@ -29,6 +56,9 @@ class GameDetails extends Component {
   }
 
   render() {
+    let myPlaylist = this.props.current_playlist.id.includes(
+      this.props.current_user.id
+    );
     return React.createElement(
       React.Fragment,
       {},
@@ -37,6 +67,9 @@ class GameDetails extends Component {
             React.createElement(GameDetailsView, {
               current_playlist: this.props.current_playlist,
               startPlaying: () => this.startPlaying(),
+              myPlaylist: myPlaylist,
+              removePlaylist: (current_playlist) =>
+                this.removePlaylist(current_playlist),
               token: this.props.token,
             })
         : promiseNoData(this.state.loading, this.state.err) ||
@@ -48,6 +81,7 @@ class GameDetails extends Component {
 const mapStateToProps = (state) => {
   return {
     current_playlist: state.current_playlist,
+    current_user: state.current_user,
     is_playing: state.is_playing,
     token: state.token,
   };
