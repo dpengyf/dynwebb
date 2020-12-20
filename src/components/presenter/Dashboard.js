@@ -37,7 +37,7 @@ class Dashboard extends Component {
   componentDidMount() {
     if (this.props.token !== undefined) {
       this.fetchFromFirestore();
-      if (this.props.userDetails === undefined) {
+      if (!this.props.userDetails.exist) {
         this.pushToFirestoreUser();
       }
       this.props.updateFirstVisit(true);
