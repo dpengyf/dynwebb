@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { updateToken } from "../../redux/actions";
 import RedirectPageView from "../views/RedirectPageView";
 import { connect } from "react-redux";
-//TODO: fixa sa att man inte kan komma hit utan inlogg
+
 class RedirectPage extends Component {
   constructor(props) {
     super(props);
@@ -12,7 +12,7 @@ class RedirectPage extends Component {
 
   getValues(url) {
     const url_arr = url.split("&");
-    url_arr[0] = url_arr[0].split("#").pop(); //remove callback#
+    url_arr[0] = url_arr[0].split("#").pop(); 
 
     const url_obj = url_arr.reduce((prev, curr) => {
       const [title, value] = curr.split("=");
