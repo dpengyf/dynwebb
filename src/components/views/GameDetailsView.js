@@ -28,7 +28,7 @@ const GameDetailsView = ({
              <h1 className="display-5 lead text-muted">
                Highscore: {current_playlist.highscore}
              </h1>
-             <div className="row-sm-4">
+             <div className="row-sm-4 mb-3">
                <button
                  className="btn btn-secondary primaryButton mr-2"
                  onClick={() => {

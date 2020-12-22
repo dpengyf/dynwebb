@@ -36,9 +36,9 @@ class Details extends Component {
   addToPlaylist(track) {
     this.setState({ loading: true });
     setTimeout(() => {
-      this.props.addToPlaylist(track);
+      this.setState({ loading: false });
     }, 1000);
-    this.setState({ loading: false });
+    this.props.addToPlaylist(track);
   }
   render() {
     return (
